@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option csharp_namespace = "Prod";
+
+package Product;
+
+service CatalogService{
+	rpc GetAllProducts(EmptyRequest) returns (ListReply);
+	rpc GetProduct(GetProductRequest) returns (ProductResponse);
+	rpc CreateProduct(CreateProductRequest) returns (Response);
+	rpc DeleteProduct(DeleteProductRequest) returns (Response);
+	rpc UpdateProduct(CreateProductRequest) returns (ProductResponse);
+}
+message EmptyRequest{}
+
+message Response{
+	int32 id = 1;
+}
+message GetProductRequest{
+	int32 id = 1;
+}
+message DeleteProductRequest{
+	int32 id = 1;
+}
+message CreateProductRequest{
+	int32 id = 1;
+	string name = 2;
+	double price = 3;
+	int32 count = 4;
+}
+message ProductResponse{
+	int32 id = 1;
+	string name = 2;
+	double price = 3;
+	int32 count = 4;
+}
+message ListReply{
+	repeated ProductResponse Infos = 1;
+}
