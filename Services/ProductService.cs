@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Prod.DB;
 using Prod.Entity;
 
 namespace Prod.Services
@@ -6,11 +7,7 @@ namespace Prod.Services
     public class ProductService : CatalogService.CatalogServiceBase
     {
         //Условное хранилище/Бд
-        private static List<ProductInfo> _products = new List<ProductInfo>() 
-        { new ProductInfo() {Id = 1,Name = "Бумага/упак",Price = 199,Count = 3 },
-          new ProductInfo() {Id = 2,Name = "Ножницы/шт",Price = 150,Count = 10 },
-          new ProductInfo() {Id = 3,Name = "Карандаши/упак",Price = 100,Count = 7 }
-        };
+        private ApplicationDbContext _db;
 
         public override Task<ListReply> GetAllProducts(EmptyRequest request, ServerCallContext context)
         {
