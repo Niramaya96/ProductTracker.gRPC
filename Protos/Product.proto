@@ -7,7 +7,7 @@ package Product;
 service CatalogService{
 	rpc GetAllProducts(EmptyRequest) returns (ListReply);
 	rpc GetProduct(GetProductRequest) returns (ProductResponse);
-	rpc CreateProduct(CreateProductRequest) returns (Response);
+	rpc CreateProduct(CreateProductRequest) returns (ProductResponse);
 	rpc DeleteProduct(DeleteProductRequest) returns (Response);
 	rpc UpdateProduct(CreateProductRequest) returns (ProductResponse);
 }
@@ -23,7 +23,6 @@ message DeleteProductRequest{
 	int32 id = 1;
 }
 message CreateProductRequest{
-	int32 id = 1;
 	string name = 2;
 	double price = 3;
 	int32 count = 4;
