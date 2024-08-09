@@ -7,7 +7,7 @@ namespace Prod.Services
     public class ProductService : CatalogService.CatalogServiceBase
     {
         //Условное хранилище/Бд
-        private ApplicationDbContext _db;
+        private ApplicationDbContext _db = null!;
 
         public override Task<ListReply> GetAllProducts(EmptyRequest request, ServerCallContext context)
         {
