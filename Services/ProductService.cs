@@ -66,7 +66,7 @@ namespace Prod.Services
         {
             var product = _db.ProductInfos.FirstOrDefault(p => p.Name == request.Name);
             if (product == null) //если его нет, выкидываем исключение
-                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id - {request.Id}: Not Found"));
+                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id - {request.Name}: Not Found"));
 
             //изменяем данные
             product.Name = request.Name;
