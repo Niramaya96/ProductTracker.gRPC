@@ -1,81 +1,89 @@
 ﻿using Grpc.Core;
-using Prod.DB;
-using Prod.Entity;
+using Microsoft.EntityFrameworkCore;
 
-namespace Prod.Services
+namespace Web
 {
     public class ProductService : CatalogService.CatalogServiceBase
     {
-        //Условное хранилище/Бд
-        private ApplicationDbContext _db;
+        private readonly ApplicationDbContext _db;
 
-        public override Task<ListReply> GetAllProducts(EmptyRequest request, ServerCallContext context)
+        public ProductService(ApplicationDbContext db)
         {
-            var listReply = new ListReply(); //создаем коллекцию отправляемую в ответ
+            _db = db;
+        }
 
+        public override async Task<ListReply> GetAllProducts(EmptyRequest request, ServerCallContext context)
+        {
             var productsCollection = _db.ProductInfos.Select(product =>
             new ProductResponse { Id = product.Id, Name = product.Name, Count = product.Count, Price = product.Price });
-            //преобразуем обьекты из хранилища в обьекты требуемые для ответа
-            
+
+            if (productsCollection == null)
+                throw new RpcException(new Status(StatusCode.NotFound, $"Products Not Found"));
+
+            var listReply = new ListReply(); //создаем коллекцию отправляемую в ответ
+
             listReply.Infos.AddRange(productsCollection); // добавляем их в коллекцию для ответа
-            
-            return Task.FromResult(listReply);
 
-            //добавить обработку исключений если коллекция пуста или нет доступа
+            return await Task.FromResult(listReply);
         }
-        public override Task<ProductResponse> GetProduct(GetProductRequest request, ServerCallContext context)
+        public override async Task<ProductResponse> GetProduct(GetProductRequest request, ServerCallContext context)
         {
-            var product = _db.ProductInfos.FirstOrDefault(p => p.Id == request.Id); //ищем обьект по ID
+            var product = await _db.ProductInfos.FirstOrDefaultAsync(p => p.Id == request.Id); //ищем обьект по ID
 
             if (product == null) //если его нет, выкидываем исключение
-                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id - {request.Id}: Not Found"));
+                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id:{request.Id} - Not Found"));
 
-            var productResponse = new ProductResponse() 
-            { Id = product.Id,Name=product.Name,
-              Count=product.Count,
-              Price=product.Price}; //преобразуем в класс для ответа
+            var productResponse = new ProductResponse()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Count = product.Count,
+                Price = product.Price
+            }; //преобразуем в класс для ответа
 
-            return Task.FromResult(productResponse);
+            return await Task.FromResult(productResponse);
         }
-        public override Task<ProductResponse> CreateProduct(CreateProductRequest request, ServerCallContext context)
+        public override async Task<ProductResponse> CreateProduct(CreateProductRequest request, ServerCallContext context)
         {
-            var newProduct = new ProductInfo() {Name=request.Name, Price=request.Price,Count=request.Count};//создаем новый обьект с параметрами из запроса
+            var newProduct = new ProductInfo()
+            {
+                Name = request.Name,
+                Price = request.Price,
+                Count = request.Count
+            };//создаем новый обьект ProductInfo из запроса
 
-            if(_db.ProductInfos.Contains(newProduct))
-                throw new RpcException(new Status(StatusCode.InvalidArgument,$"{newProduct} - уже есть в БД"));
+            await _db.ProductInfos.AddAsync(newProduct);
+            await _db.SaveChangesAsync();
 
-            _db.ProductInfos.Add(newProduct);
-            _db.SaveChangesAsync();
-
-            //добавляем его в хранилище/БД
-            //подумать о том как не добавлять уже существующие товары
-            return Task.FromResult(new ProductResponse() { Id = newProduct.Id,Name=newProduct.Name,Price=newProduct.Price,Count=newProduct.Count});
+            return await Task.FromResult(new ProductResponse() { Id = newProduct.Id, Name = newProduct.Name, Price = newProduct.Price, Count = newProduct.Count });
         }
-        public override Task<Response> DeleteProduct(DeleteProductRequest request, ServerCallContext context)
+        public override async Task<Response> DeleteProduct(DeleteProductRequest request, ServerCallContext context)
         {
-            var product = _db.ProductInfos.FirstOrDefault(p => p.Id == request.Id);
+            var product = await _db.ProductInfos.FirstOrDefaultAsync(p => p.Id == request.Id);
             if (product == null) //если его нет, выкидываем исключение
-                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id - {request.Id}: Not Found"));
+                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id:{request.Id} - Not Found"));
 
-            _db.ProductInfos.Remove(product); //удаляем если нашли
-            _db.SaveChangesAsync();
+            _db.ProductInfos.Remove(product);
+            await _db.SaveChangesAsync();
 
-            return Task.FromResult(new Response() { Id = product.Id});
+            return await Task.FromResult(new Response() { Id = product.Id });
         }
-        public override Task<ProductResponse> UpdateProduct(CreateProductRequest request, ServerCallContext context)
+        public override async Task<ProductResponse> UpdateProduct(UpdateProductRequest request, ServerCallContext context)
         {
-            var product = _db.ProductInfos.FirstOrDefault(p => p.Name == request.Name);
+            var product = await _db.ProductInfos.FirstOrDefaultAsync(p => p.Id == request.Id);
             if (product == null) //если его нет, выкидываем исключение
-                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id - {request.Name}: Not Found"));
+                throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id:{request.Id} - Not Found"));
 
-            //изменяем данные
+            //изменяем и сохраняем данные
             product.Name = request.Name;
             product.Price = request.Price;
             product.Count = request.Count;
-            _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
 
-            return Task.FromResult(new ProductResponse() 
-            { Id = product.Id, Name=product.Name, Price=product.Price, Count=product.Count});
+            return await Task.FromResult(new ProductResponse()
+            { Id = product.Id, Name = product.Name, Price = product.Price, Count = product.Count });
+
         }
     }
 }
+

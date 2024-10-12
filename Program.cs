@@ -1,17 +1,17 @@
-using Prod.DB;
-using Prod.Services;
+using Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>();
-// Add services to the container.
+builder.Services.AddScoped<ProductService>();
+
 builder.Services.AddGrpc();
+
+builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
-app.MapGrpcService<ProductService>();
-app.MapGet("/", () => "Hello GRPC");
+app.MapControllers();
 
 app.Run();

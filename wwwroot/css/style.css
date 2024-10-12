@@ -1,0 +1,78 @@
+﻿:root{
+	--firstColor: #1b92bc;
+	--secondColor:#FFBC1C;
+	--thirdColor: #FF3F1C;
+
+}
+
+html, body{
+min-height: 100vh;
+}
+
+body{
+	font-family: "Lato", sans-serif;
+	background-image: url(../img/bg.png);
+	background-repeat: no-repeat;
+	background-size: cover;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.container{
+	background-color: aliceblue;
+	width: 100%;
+	max-width: 1280px;
+	margin: 0 auto;
+	border-radius: 16px;
+	border: 1px solid #FFFF;
+}
+
+.header{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 30px;
+	box-sizing: border-box;
+	border-bottom: 1px solid gray;
+}
+
+.header_logo{
+	display: block;
+	width: 50px;
+	height: 50px;
+	background-image: url(../img/pencil-svgrepo-com.svg);
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+
+.header_nav{
+	display: flex;
+	gap: 30px;
+}
+
+.header_link{
+	font-size: 20px;
+	font-weight: 400;
+	color: black;
+}
+.header_link:hover{
+	color: var(--firstColor);
+}
+
+a{
+	text-decoration: none;
+}
+
+.main{
+	height: 600px;
+	display: flex;
+	justify-content: center;
+}
+.section{
+	height: 100%;
+	width: 50%;
+}
+
