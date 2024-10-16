@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -12,8 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\ProductTracker.DataAccess.csproj" />
-    <ProjectReference Include="..\Entities\ProductTracker.Core.csproj" />
+    <ProjectReference Include="..\ProductTracker.Application\ProductTracker.Application.csproj" />
+    <ProjectReference Include="..\ProductTracker.Core\ProductTracker.Core.csproj" />
+    <ProjectReference Include="..\ProductTracker.DataAccess\ProductTracker.DataAccess.csproj" />
   </ItemGroup>
 
 	<ItemGroup>
