@@ -1,0 +1,15 @@
+﻿@model List<ProductInfo>
+
+<link rel="stylesheet" href="~/css/style.css">
+
+<table class="productsTable">
+    <thead>
+        <th>Название</th><th>Количество</th><th>Цена</th>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr><td>@item.Name</td><td>@item.Count</td><td>@item.Price</td></tr>
+        }
+    </tbody>
+</table>

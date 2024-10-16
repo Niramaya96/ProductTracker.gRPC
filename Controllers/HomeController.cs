@@ -12,12 +12,14 @@ namespace Web
             _productService = productService;
         }
 
-        public ActionResult Index()
+        [HttpGet("")]
+        public IActionResult Index()
         {
-            return View();
+            return View("Index");
         }
+
         [HttpGet("/GetAll")]
-        public async Task<ActionResult<ListReply>> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
             try
             {
@@ -25,7 +27,7 @@ namespace Web
 
                 var prodInfos = result.Infos.Select(p => new ProductInfo { Id = p.Id, Name = p.Name, Count = p.Count, Price = p.Price }).ToList();
 
-                return View("Index",prodInfos);
+                return View("GetProducts",prodInfos);
             }
             catch (Exception ex)
             {
@@ -34,7 +36,7 @@ namespace Web
         }
 
         [HttpGet("/Get")]
-        public async Task<ActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
@@ -48,8 +50,8 @@ namespace Web
             }
         }
 
-        [HttpDelete("Home/Delete")]
-        public async Task<ActionResult> DeleteProduct(int id)
+        [HttpDelete("/Delete")]
+        public async Task<IActionResult> DeleteProduct(int id)
         {
             try
             {
@@ -61,6 +63,34 @@ namespace Web
                 return NotFound(ex.Message);
             }
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody]CreateProductRequest request)
+        {
+            try
+            {
+                var response = _productService.CreateProduct(request,null);
+
+                return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
+
+        [Route("Error")]
+        public IActionResult Error(string message)
+        {
+            var errorViewModel = new ErrorViewModel()
+            { 
+                RequestId = HttpContext.TraceIdentifier,
+                Message = message
+            };
+            
+            return View(errorViewModel);
         }
 
     }

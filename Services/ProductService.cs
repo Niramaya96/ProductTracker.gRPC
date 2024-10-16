@@ -14,17 +14,22 @@ namespace Web
 
         public override async Task<ListReply> GetAllProducts(EmptyRequest request, ServerCallContext context)
         {
-            var productsCollection = _db.ProductInfos.Select(product =>
-            new ProductResponse { Id = product.Id, Name = product.Name, Count = product.Count, Price = product.Price });
+            var products = await _db.ProductInfos.ToListAsync();
 
-            if (productsCollection == null)
+            if (!products.Any())
                 throw new RpcException(new Status(StatusCode.NotFound, $"Products Not Found"));
 
             var listReply = new ListReply(); //создаем коллекцию отправляемую в ответ
 
-            listReply.Infos.AddRange(productsCollection); // добавляем их в коллекцию для ответа
+            listReply.Infos.AddRange(products.Select(product => 
+                    new ProductResponse {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Count = product.Count,
+                    Price = product.Price
+                })); // добавляем их в коллекцию для ответа
 
-            return await Task.FromResult(listReply);
+            return listReply;
         }
         public override async Task<ProductResponse> GetProduct(GetProductRequest request, ServerCallContext context)
         {
@@ -41,7 +46,7 @@ namespace Web
                 Price = product.Price
             }; //преобразуем в класс для ответа
 
-            return await Task.FromResult(productResponse);
+            return productResponse;
         }
         public override async Task<ProductResponse> CreateProduct(CreateProductRequest request, ServerCallContext context)
         {
@@ -55,7 +60,13 @@ namespace Web
             await _db.ProductInfos.AddAsync(newProduct);
             await _db.SaveChangesAsync();
 
-            return await Task.FromResult(new ProductResponse() { Id = newProduct.Id, Name = newProduct.Name, Price = newProduct.Price, Count = newProduct.Count });
+            return new ProductResponse() 
+            { 
+                Id = newProduct.Id, 
+                Name = newProduct.Name, 
+                Price = newProduct.Price, 
+                Count = newProduct.Count 
+            };
         }
         public override async Task<Response> DeleteProduct(DeleteProductRequest request, ServerCallContext context)
         {
@@ -66,7 +77,7 @@ namespace Web
             _db.ProductInfos.Remove(product);
             await _db.SaveChangesAsync();
 
-            return await Task.FromResult(new Response() { Id = product.Id });
+            return new Response() { Id = product.Id };
         }
         public override async Task<ProductResponse> UpdateProduct(UpdateProductRequest request, ServerCallContext context)
         {
@@ -80,8 +91,13 @@ namespace Web
             product.Count = request.Count;
             await _db.SaveChangesAsync();
 
-            return await Task.FromResult(new ProductResponse()
-            { Id = product.Id, Name = product.Name, Price = product.Price, Count = product.Count });
+            return new ProductResponse()
+            {
+                Id = product.Id, 
+                Name = product.Name, 
+                Price = product.Price, 
+                Count = product.Count 
+            };
 
         }
     }

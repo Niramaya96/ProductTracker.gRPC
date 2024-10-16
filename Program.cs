@@ -10,8 +10,12 @@ builder.Services.AddGrpc();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
+
 var app = builder.Build();
 
+app.UseExceptionHandler("/Error");
+
+app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();

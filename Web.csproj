@@ -7,21 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\Shared\_Layout.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\Shared\_Layout.html" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-    <ProjectReference Include="..\Entities\Entities.csproj" />
+    <ProjectReference Include="..\DataAccess\ProductTracker.DataAccess.csproj" />
+    <ProjectReference Include="..\Entities\ProductTracker.Core.csproj" />
   </ItemGroup>
 
 	<ItemGroup>
