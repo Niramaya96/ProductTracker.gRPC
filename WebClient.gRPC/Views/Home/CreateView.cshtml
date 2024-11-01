@@ -1,0 +1,19 @@
+﻿<form asp-action="Create" asp-controller="Home" asp-antiforgery="true">
+    <div>
+        <p>
+            <label asp-for="Name"></label>
+            <input type="text" asp-for="Name" />
+        </p>
+        <p>
+            <label asp-for="Price"></label>
+            <input asp-for="Price" />
+        </p>
+        <p>
+            <label asp-for="CompanyId">Company</label>
+            <select asp-for="CompanyId" asp-items="ViewBag.Companies"></select>
+        </p>
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </div>
+</form>

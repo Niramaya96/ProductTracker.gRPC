@@ -1,21 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Web
+namespace WebClient.gRPC
 {
+
     [Route("")]
     public class HomeController : Controller
     {
-        readonly ProductService _productService;
-
-        public HomeController(ProductService productService)
+        private readonly CatalogService.CatalogServiceClient _catalogServiceClient;
+        public HomeController(CatalogService.CatalogServiceClient catalogService) 
         {
-            _productService = productService;
+            _catalogServiceClient = catalogService;
         }
 
-        [HttpGet("")]
         public IActionResult Index()
         {
-            return View("Index");
+            return View();
         }
 
         [HttpGet("/GetAll")]
@@ -23,11 +22,11 @@ namespace Web
         {
             try
             {
-                var result = await _productService.GetAllProducts(new EmptyRequest(),null);
+                var result = await _catalogServiceClient.GetAllProductsAsync(new EmptyRequest());
 
-                var prodInfos = result.Infos.Select(p => new ProductInfo { Id = p.Id, Name = p.Name, Count = p.Count, Price = p.Price }).ToList();
+                var prodInfos = result.Infos.Select(p => new ProductViewModel() { Id = p.Id,Name=p.Name,Price=p.Price,Count=p.Count}).ToList();
 
-                return View("GetProducts",prodInfos);
+                return Ok(prodInfos);
             }
             catch (Exception ex)
             {
@@ -41,7 +40,7 @@ namespace Web
             try
             {
                 var productRequest = new GetProductRequest { Id = id };
-                var result = await _productService.GetProduct(productRequest, null);
+                var result = await _catalogServiceClient.GetProductAsync(productRequest);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -55,7 +54,7 @@ namespace Web
         {
             try
             {
-                await _productService.DeleteProduct(new DeleteProductRequest() { Id = id}, null);
+                await _catalogServiceClient.DeleteProductAsync(new DeleteProductRequest() {Id = id});
                 return Ok();
             }
             catch (Exception ex)
@@ -65,35 +64,37 @@ namespace Web
 
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody]CreateProductRequest request)
+        [HttpPost("/Create")]
+        public async Task<IActionResult> CreateProduct([FromBody] ProductViewModel product)
         {
             try
             {
-                var response = _productService.CreateProduct(request,null);
+                //var createRequest = new CreateProductRequest() { Name = product.Name, Price = product.Price,Count = product.Count};
+                //var response = _catalogServiceClient.CreateProductAsync(createRequest);
 
-                return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+                return View("CreateView");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
 
         [Route("Error")]
         public IActionResult Error(string message)
         {
             var errorViewModel = new ErrorViewModel()
-            { 
+            {
                 RequestId = HttpContext.TraceIdentifier,
                 Message = message
             };
-            
+
             return View(errorViewModel);
         }
 
     }
 }
+
 
   

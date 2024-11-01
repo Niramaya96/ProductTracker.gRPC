@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width"/>
@@ -22,13 +21,15 @@
         </header>
         <main class="main">
             <div class="buttons">
-                <button>Получить все</button>
+                <button class="getAll">Получить все</button>
+                <button>Получить по Id</button>
                 <button>Добавить</button>
                 <button>Изменить</button>
                 <button>Удалить</button>
             </div>
-            <div class="productsCollection">@RenderBody()</div>
+            <div class="content">@RenderBody();</div>
         </main>
     </div>
+    <script defer src="..//../wwwroot/js/script.js"></script>
 </body>
 </html>

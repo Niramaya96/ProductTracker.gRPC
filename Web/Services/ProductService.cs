@@ -14,7 +14,7 @@ namespace Web
 
         public override async Task<ListReply> GetAllProducts(EmptyRequest request, ServerCallContext context)
         {
-            var products = await _db.ProductInfos.ToListAsync();
+            var products = await _db.ProductInfos.AsNoTracking().ToListAsync();
 
             if (!products.Any())
                 throw new RpcException(new Status(StatusCode.NotFound, $"Products Not Found"));
@@ -33,7 +33,7 @@ namespace Web
         }
         public override async Task<ProductResponse> GetProduct(GetProductRequest request, ServerCallContext context)
         {
-            var product = await _db.ProductInfos.FirstOrDefaultAsync(p => p.Id == request.Id); //ищем обьект по ID
+            var product = await _db.ProductInfos.AsNoTracking().FirstOrDefaultAsync(p => p.Id == request.Id); //ищем обьект по ID
 
             if (product == null) //если его нет, выкидываем исключение
                 throw new RpcException(new Status(StatusCode.NotFound, $"Product with Id:{request.Id} - Not Found"));
@@ -50,7 +50,7 @@ namespace Web
         }
         public override async Task<ProductResponse> CreateProduct(CreateProductRequest request, ServerCallContext context)
         {
-            var newProduct = new ProductInfo()
+            var newProduct = new Product()
             {
                 Name = request.Name,
                 Price = request.Price,
